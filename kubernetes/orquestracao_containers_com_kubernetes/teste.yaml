@@ -1,0 +1,144 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2023-03-15T11:45:49Z"
+  generateName: devops-log-deployment-fbf8dd77b-
+  labels:
+    app.kubernetes.io/name: devops-log-pod
+    app.kubernetes.io/version: 1.0.0
+    pod-template-hash: fbf8dd77b
+  name: devops-log-deployment-fbf8dd77b-xtbz8
+  namespace: devops
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: devops-log-deployment-fbf8dd77b
+    uid: e1b4a6f8-136c-4931-97b9-3f0c37c8a25c
+  resourceVersion: "46554"
+  uid: a2e54559-a6c0-4273-bbe8-1f6b2adc4b62
+spec:
+  containers:
+  - image: timpamungkas/devops-blue:1.0.0
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 4
+      httpGet:
+        path: /devops/blue/actuator/health/liveness
+        port: 8111
+        scheme: HTTP
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: devops-blue
+    ports:
+    - containerPort: 8111
+      name: http
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 4
+      httpGet:
+        path: /devops/blue/actuator/health/readiness
+        port: 8111
+        scheme: HTTP
+      initialDelaySeconds: 60
+      periodSeconds: 60
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500M
+      requests:
+        cpu: 500m
+        memory: 500M
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-nnd7t
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: worker1
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-nnd7t
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-15T11:45:49Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-16T21:09:14Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-16T21:09:14Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2023-03-15T11:45:49Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://58bb2b9e7927bff614b5acb8f66371dcc26fac9801a21dc5a545d13ba21a1b23
+    image: timpamungkas/devops-blue:1.0.0
+    imageID: docker-pullable://timpamungkas/devops-blue@sha256:8e56c57894c26cfadd40ab20c95c2a20f67b83ec76b63091d15a5dfe7b8c4033
+    lastState:
+      terminated:
+        containerID: docker://04f46c6140b16168010bf6a4b47dfe575aa173db2891a76b8ecb83da63d3fa8b
+        exitCode: 255
+        finishedAt: "2023-03-16T21:07:13Z"
+        reason: Error
+        startedAt: "2023-03-15T11:45:52Z"
+    name: devops-blue
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2023-03-16T21:07:39Z"
+  hostIP: 192.168.0.121
+  phase: Running
+  podIP: 10.42.1.35
+  podIPs:
+  - ip: 10.42.1.35
+  qosClass: Guaranteed
+  startTime: "2023-03-15T11:45:49Z"

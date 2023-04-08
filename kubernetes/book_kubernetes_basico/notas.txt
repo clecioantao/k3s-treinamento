@@ -1,0 +1,25 @@
+
+# diagnostico simples
+kubectl get componentstatuses
+
+# verificar um dos nos
+kubectl describe nodes worker1
+
+# kubernete proxy
+kubectl get daemonSets -n kube-system
+
+# core dns
+kubectl get deploy -n kube-system coredns
+
+# modificar namespace default
+kubectl config set-context my-context --namespace=<name>
+kubectl config use-context my-context
+
+# verificar nodes
+kubectl get nodes.metrics.k8s.io
+
+# criando deploy com replicas
+kubectl create deployment alpaca-prod --image=gcr.io/kuar-demo/kuard-amd64:blue --replicas=2
+
+# adicionando rotulos ao deploy criado
+kubectl label deploy alpaca-prod "ver=1" "env=prod"

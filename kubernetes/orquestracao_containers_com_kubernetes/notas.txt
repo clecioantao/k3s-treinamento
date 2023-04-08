@@ -1,0 +1,15 @@
+# Criando pods forma interativa
+kubectl run my-pod-apache --image hhtpd
+
+# Comando visualizar
+kubectl get pods -o wide
+
+# Deletando
+kubectl delete pods meu-pod
+# Deletando todos pods
+kubectl delete --all pods
+
+# Replicaset escalando em linha de comando
+kubectl scale replicaset nome_replicaset --replicas=X
+
+watch - mantem o comando ate ctrl + c

@@ -1,0 +1,187 @@
+DOCKER
+
+# Install docker
+    curl -fsSL https://get.docker.com | bash
+
+# Docker run 
+    docker run --name Container -d Imagem
+
+# Comandos essenciais
+    https://www.mygreatlearning.com/blog/top-essential-docker-commands/
+
+# Exemplo simples: rodar nginx (porta default 80)
+    docker run -d --name nginx1 -p 8888:80 nginx
+
+# Entrar no container
+    docker exec -it nginx1 bash
+
+# Buscar arquivo index.html
+    find / nginx | grep index.html
+
+# Copiar arquivos para container
+    docker cp <arquivo> <nome_container>:<caminho_container>
+
+# Rodando com volume para apontar o index.html
+    docker run -d -p 8888:80 --name <container> -v <pasta_local_index>:/usr/share/nginx/html nginx
+
+CRIANDO IMAGENS - L10
+
+Criando imagem devops.bluecle
+
+# Ajustar arquivo gradlew
+    sed -i -e 's/\r$//' gradlew
+
+# Compilando Java - .JAR 
+    gradlew clean bootJar
+
+# Criando imagem com JAR
+    docker build --tag clecio/devops-blue:1.0.0 .
+
+# Usando a imagem
+    docker run -d -p 8888:8111 --name my-devops-blue devops-blue:1.0.0
+
+# Enviando imagem repositorio docker hub (antes docker login)
+    docker push clecio/devops-blue:1.0.0
+
+=========================================================================
+
+KUBERNETES
+
+# Escalando pods
+
+# Criar deployment
+    kubectl create deployment my-devops-blue --image clecio/devops-blue:1.0.0
+
+# Expondo porta - Isso cria um serviço do tipo LoadBalancer
+    kubectl expose deployment my-devops-blue --type LoadBalancer --port 8989 --name my-devops-blue-lb
+
+--------------------------------
+Aula 20 - Declarative - Hello Sample (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/declarative-hello)
+
+# Executar todos manifestos pasta 
+    kubectl apply -f .
+
+Aula 21 - Single File em novo namespace (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/declarative-single-file#)
+
+# Verificar com curl swagger
+    curl http://192.168.0.120:8888/devops/blue/api/hello
+
+Aula 23 - Labels (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/label)
+    # Analisar arquivo com os labels
+
+Aula 24 - Annotation
+    # Fica abaixo do label
+
+Aula 25 - Port Forward (opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/port-forward)
+# Importante: para funcionar necessario estar instalado "socat"
+
+Aula 26 - Healt Check (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/health-check)
+    # Usar Postman 
+        get http://192.168.0.121:9011/devops/blue/api/hello - verificar headers
+    # Testar um dos pods com port forward
+
+Aula 27 - Pod Lifecycle 
+
+    Pending	    - O pod foi aceito pelo cluster do Kubernetes, mas um ou mais contêineres não foram configurados e preparados para execução. Isso inclui o tempo que 
+                  um Pod gasta esperando para ser agendado, bem como o tempo gasto no download de imagens de contêiner pela rede.
+    Running	    - O pod foi vinculado a um nó e todos os contêineres foram criados. Pelo menos um contêiner ainda está em execução ou está em processo de inicialização ou 
+                  reinicialização.
+    Succeeded   - Todos os contêineres no pod foram encerrados com sucesso e não serão reiniciados.
+    Failed      - Todos os contêineres no pod foram encerrados e pelo menos um contêiner foi encerrado com falha. Ou seja, o contêiner saiu com status diferente de zero ou 
+                  foi finalizado pelo sistema.
+    Unknown      - Por algum motivo, não foi possível obter o estado do pod. Essa fase normalmente ocorre devido a um erro na comunicação com o node onde o Pod deveria 
+                  estar rodando.
+
+    CrashLoopBackOff: Erro, pod sera reiniciado, erro deploy, missing runtime dependency
+
+Aula 28 - Log (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/log)
+
+    # Checar erros, apresentar excessoes da aplicação, ver log do pod
+
+    # Endpoints usados nessa aula no postman:
+        api/log?text=something
+        api/exception
+
+    # kubectl logs -n devops devops-log-deployment-fbf8dd77b-l79lm
+    # kubectl describe pod -n devops devops-log-deployment-fbf8dd77b-z24sb | grep Labels: ( buscar o label para trazer todos os pods)
+    # kubectl logs -n devops --selector app.kubernetes.io/name=devops-log-pod (label atraves do comando acima) (pode ser util para elastic stack)
+
+Aula 32 - Volumes EmptyDir
+
+    # kubectl get pods -n devops devops-volume-deployment-empty-dir-78964d875c-snbvs -o jsonpath='{.spec.containers[*].name}' (busca containers do pod)
+    # kubectl exec -it -n devops devops-volume-deployment-empty-dir-78964d875c-snbvs --container devops-blue -- /bin/bash (acessar container)
+
+Aula 33 - Volumes hostPath
+
+    # Importante rever sobre volumes
+
+Aula 35 - Configmap (opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/configmap)
+
+    Trabalhando arquivo devops-configmap.yml
+
+    # kubectl get configmap -n devops -o yaml  
+    # kubectl edit configmap -n devops devops-blue-configmap (Editando configmap)
+    # kubectl rollout restart deployment -n devops devops-configmap-deployment (Fazer rollout restart)
+
+    Trabalhando com arquivos externos
+
+    # kubectl create configmap configmap-file-single -n devops --from-file=configmap-source.yml (criar configmap a partir de arquivo)
+    # kubectl get configmap configmap-file-single -n devops -o json configmap-file-single (exportar para arquivo)
+    # kubectl create configmap configmap-file-mult -n devops --from-file=configmap-source.json --from-file=configmap-source.properties --from-file=configmap-source.txt
+    # kubectl create configmap configmap-file-binary -n devops --from-file=configmap-source.png (passando arquivo binario png)
+    # kubectl get configmap -n devops -o json configmap-file-binary (buscando arquivo binario em base64)
+
+ Aula 36 - Secrets (/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/secret)
+ 
+    # kubectl apply -f devops-secret.yml
+    # kubectl get secret -n devops -o json devops-blue-secret
+    # kubectl create secret generic secret-literal -n devops --from-literal key.literal.one="Thei is my secret value for first key" \
+      --from-literal key.literal.two="While this si the secret value from secund key" (criando duas keys pelo terminal)
+    # kubectl create secret generic secret-file-sing -n devops --from-file=secret-source.yml (criando secret key atraves de arquivo)
+    # kubectl create secret generic secret-file-mult -n devops --from-file=secret-source.json --from-file=secret-source.properties \
+      --from-file=secret-source.txt --from-file=secret-source.png (criando secret key atraves de varios arquivo)
+    # kubectl create secret generic secret-folder -n devops --from-file=secret-sources  (criando secret com varios arquivos atraves de pasta)
+    # kubectl get secret -n devops secret-file-mult -o json (expondo a secret)
+
+Aula 37 - Service
+
+    Serviço clusterIp - Usando kubeproxy
+    # kubectl proxy --port=8888
+    
+Aula 40 - Introduction Helm
+
+    Instalar Helm
+    ArtifactHub
+    Exemplo instalar Jenkins ()
+        Add repository
+            # helm repo add jenkinsci https://charts.jenkins.io/
+            # helm repo list
+        Install chart
+            # helm install my-jenkins jenkinsci/jenkins --version 4.3.20
+            
+
+
+==============================================================
+
+
+# Buscando objetos
+    kubect get deploy / pod / svc
+
+# criando um pod nginx
+    create deployment my-nginx --image nginx:stable
+
+# describe pod
+    kubectl describe pod my-nginx-7bc959fcc7-pp5wq
+
+# expondo a porta - cria serviço automatico
+    kubectl expose deployment my-nginx --type NodePort --port 80
+
+# lista todos recursos
+    kubectl api-resources
+
+# pode user describe para todos recursos!!!
+    kubectl describe service my-nginx
+
+
+
+

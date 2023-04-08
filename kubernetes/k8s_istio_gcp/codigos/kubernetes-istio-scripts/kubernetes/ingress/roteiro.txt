@@ -1,0 +1,37 @@
+root@master:/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/ingress# kubectl get ingress -n devops
+NAME                   CLASS   HOSTS   ADDRESS   PORTS   AGE
+devops-ingress-nginx   nginx   *                 80      42s
+
+root@master:/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/ingress# kubectl describe ingress devops-ingress-nginx -n devops
+Name:             devops-ingress-nginx
+Labels:           app.kubernetes.io/name=devops-ingress-nginx
+Namespace:        devops
+Address:          
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *           
+              /devops/blue     devops-blue-clusterip:8111 (10.42.1.120:8111,10.42.2.93:8111)
+              /devops/yellow   devops-yellow-clusterip:8112 (10.42.1.119:8112,10.42.2.94:8112)
+Annotations:  nginx.ingress.kubernetes.io/proxy-connect-timeout: 8
+              nginx.ingress.kubernetes.io/proxy-read-timeout: 8
+              nginx.ingress.kubernetes.io/proxy-send-timeout: 8
+              nginx.ingress.kubernetes.io/service-upstream: true
+Events:       <none>
+
+root@master:/opt/treinamentos/k8s_istio_gcp/codigos/kubernetes-istio-scripts/kubernetes/ingress# kubectl get pod -n devops -o wide
+NAME                                                READY   STATUS    RESTARTS   AGE     IP            NODE      NOMINATED NODE   READINESS GATES
+devops-ingress-blue-deployment-66f66c4766-gmzg6     1/1     Running   0          5m30s   10.42.2.93    worker2   <none>           <none>
+devops-ingress-yellow-deployment-64867ddfd9-wcg72   1/1     Running   0          5m30s   10.42.2.94    worker2   <none>           <none>
+devops-ingress-yellow-deployment-64867ddfd9-hdptw   1/1     Running   0          5m30s   10.42.1.119   worker1   <none>           <none>
+devops-ingress-blue-deployment-66f66c4766-9225v     1/1     Running   0          5m30s   10.42.1.120   worker1   <none>           <none>
+
+* aqui habilita ingress com minikube addons - como fazer no k8s?
+
+minikube addons enable ingress
+minikute tunnnel
+
+
+
